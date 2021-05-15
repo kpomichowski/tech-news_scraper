@@ -1,4 +1,5 @@
 import requests
+from dtparser import DataParser
 
 
 class WebScraper:
@@ -6,11 +7,6 @@ class WebScraper:
         The WebScraper class, based on the providing url, makes the GET request for resources.
         The WebScraper uses the API requests library.
     """
-
-
-    def __init__(self):
-        # Initalize the url attribute
-        ...
 
     def get(self, url):
         # Realize the request GET method
@@ -22,7 +18,21 @@ class WebScraper:
         if not self.request.ok:
             raise requests.HTTPError('Request could not be realized. HTTP Error')
 
-        return self.request.status_code
+        return dict(status=self.request.status_code)
+
+
+    def content(self):
+        # Return the body from GET request method
+        if not self.request:
+            raise ValueError('The request was invalid or no content.')
+        self.dp = DataParser(self.request)
+        content = self.dp.read_content()
+        return content
+
+    def json(self):
+        if not self.request:
+            raise ValueError('The JSON is unable to save an empty file.')
+        self.dp.to_json()
 
 
 
