@@ -19,7 +19,8 @@
 
 {% block content %}
   <h1>Hackernews, dobreprogramy, antyweb, spidersweb (soon)!</h1>
-    <h2>List of random articles:</h2>
+  <br><br><br>
+    <h3>List of random articles:</h3>
     <br>
 
   {% for item in data %}
@@ -38,12 +39,13 @@
     </ul>
   </div>
 </div>
-  <br>
+  <hr>
+
   {% endfor %}
 
 {{super()}}
 {%- block footer %}
-<footer><b>&copy; 2016 Awesome, Inc.</b></footer>
+<footer><b>&copy; 2021 Tech news, Inc.</b></footer>
 {%- endblock footer %}
 {% endblock %}
 

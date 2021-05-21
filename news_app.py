@@ -14,8 +14,8 @@ ROWS_PER_PAGE = 10
 app = Flask(__name__)
 app.config.update(
     TEMPLATES_AUTO_RELOAD=True,
-    DEBUG=True,
-    APPLICATION_ROOT=os.getcwd()
+    DEBUG=False,
+    APPLICATION_ROOT=os.getcwd(),
 )
 Bootstrap(app)
 
@@ -50,21 +50,18 @@ def randomize_data(news):
     return random.choices(news, k=3)
 
 
-news = get_json_file('news')
-beststories = get_json_file('beststories')
-
-
 # Main page
 @app.route("/", methods=['GET'])
 def main_page_news():
-    data = randomize_data(news) + randomize_data(beststories)
+    data = randomize_data(get_json_file('news')) + \
+        randomize_data(get_json_file('beststories'))
     return render_template('base.html', data=data)
 
 
 # Hacker news - newstories
 @app.route('/hackernews/news', methods=['GET'])
 def hackernews_news_page():
-    data = news
+    data = get_json_file('news')
     search = False
     q = request.args.get('q')
     if q:
@@ -80,7 +77,17 @@ def hackernews_news_page():
 # Hacker news - beststories
 @app.route('/hackernews/beststories', methods=['GET'])
 def hacker_news_beststories_page():
-    ...
+    data = get_json_file('beststories')
+    search = False
+    q = request.args.get('q')
+    if q:
+        search = True
+    page = request.args.get(get_page_parameter(), type=int, default=1)
+    copy = paginate(data, page)
+    pagination = Pagination(page=page,
+                            per_page=ROWS_PER_PAGE, total=len(data) - 1,
+                            search=search, record_name='data', css_framework='foundation')
+    return render_template('beststories.html', data=copy, pagination=pagination)
 
 
 # Render the navbar for bootstrap template
@@ -94,3 +101,7 @@ nav.register_element('top', Navbar(
 
 
 nav.init_app(app)
+
+
+if __name__ == '__main__':
+    app.run()
